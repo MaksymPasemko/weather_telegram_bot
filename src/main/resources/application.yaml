@@ -1,0 +1,18 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/weather_bot
+    driver-class-name: org.postgresql.Driver
+    username: ${username}
+    password: ${password}
+
+bot:
+  name: ${Bot_Name}
+  token: ${Bot_Token}
+
+openweather:
+  api:
+    key: ${Api_Key}
+    url: ${Api_Url}
