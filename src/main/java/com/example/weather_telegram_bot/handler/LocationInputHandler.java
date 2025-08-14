@@ -37,23 +37,28 @@ public class LocationInputHandler implements Handler{
         return checkLocation(user,message);
     }
     private List<PartialBotApiMethod<? extends Serializable>> accept(User user){
-        final SendMessage locationSavedMessage = createMessage(user);
-        locationSavedMessage.setText(String.format("Your location is saved as %s",user.getLocation()));
+        final SendMessage sendMessage = createMessage(user);
+        sendMessage.setText(String.format("Your location is saved as %s",user.getLocation()));
 
-        final SendMessage weatherMessage = createMessage(user);
         final InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
-        final InlineKeyboardButton weatherForecastButton =
-                createInlineKeyboardButton(WEATHER_FORECAST.getText(),WEATHER_FORECAST );
+        final InlineKeyboardButton yourWeatherForecastButton =
+                createInlineKeyboardButton(WEATHER_FORECAST_YOUR_LOCATION.getText(),WEATHER_FORECAST_YOUR_LOCATION );
 
-        final List<InlineKeyboardButton> rawInlineKeyboardButton = List.of(weatherForecastButton);
-        inlineKeyboardMarkup.setKeyboard(List.of(rawInlineKeyboardButton));
+        final InlineKeyboardButton otherWeatherForecastButton =
+                createInlineKeyboardButton(WEATHER_FORECAST_OTHER_LOCATION.getText(),WEATHER_FORECAST_OTHER_LOCATION );
 
-        weatherMessage.setReplyMarkup(inlineKeyboardMarkup);
+        final List<InlineKeyboardButton> inlineKeyboardButtons =
+                List.of(yourWeatherForecastButton,otherWeatherForecastButton);
+        inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtons));
+
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.setText(String.format("Enter \"Your location\" in order to check weather in your location %n" +
+                "and enter \"Other location\" in order to check weather in other location:"));
 
         user.setBotState(State.WEATHER_FORECAST);
         userService.createOrUpdateUser(user);
-        return List.of(locationSavedMessage,weatherMessage);
+        return List.of(sendMessage);
     }
     private List<PartialBotApiMethod<? extends Serializable>> changeLocation(User user){
         final SendMessage sendMessage = createMessage(user);
