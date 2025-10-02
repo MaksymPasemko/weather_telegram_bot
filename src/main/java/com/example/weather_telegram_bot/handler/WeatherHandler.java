@@ -4,8 +4,10 @@ package com.example.weather_telegram_bot.handler;
 import com.example.weather_telegram_bot.bot.State;
 import com.example.weather_telegram_bot.dto.WeatherResponse;
 import com.example.weather_telegram_bot.model.User;
+import com.example.weather_telegram_bot.service.UserService;
 import com.example.weather_telegram_bot.service.WeatherService;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,14 +17,16 @@ import java.util.List;
 
 import static com.example.weather_telegram_bot.bot.Button.WEATHER_FORECAST_OTHER_LOCATION;
 import static com.example.weather_telegram_bot.bot.Button.WEATHER_FORECAST_YOUR_LOCATION;
+import static com.example.weather_telegram_bot.bot.State.IDLE;
 import static com.example.weather_telegram_bot.bot.State.WEATHER_FORECAST;
 import static com.example.weather_telegram_bot.util.TelegramUtil.createMessage;
 import static com.example.weather_telegram_bot.util.WeatherResponseNormalizer.normalize;
 
-@Service
+@Component
 @AllArgsConstructor
 public class WeatherHandler implements Handler {
     private final WeatherService weatherService;
+    private final UserService userService;
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
@@ -41,7 +45,8 @@ public class WeatherHandler implements Handler {
         final String weatherResponseNormalized = normalize(weatherResponse);
         sendMessage.setText(weatherResponseNormalized);
 
-
+        user.setBotState(IDLE);
+        userService.createOrUpdateUser(user);
         return List.of(sendMessage);
     }
 
@@ -50,7 +55,6 @@ public class WeatherHandler implements Handler {
         sendMessage.setText("Enter location in order to check weather:");
         return List.of(sendMessage);
     }
-
 
     @Override
     public State operatedBotState() {

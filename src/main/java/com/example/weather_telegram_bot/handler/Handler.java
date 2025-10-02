@@ -9,6 +9,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface Handler {
-    List<PartialBotApiMethod<? extends Serializable>> handle(User user,String message) throws IOException;
+    List<PartialBotApiMethod<? extends Serializable>> handle(User user,String message);
     State operatedBotState();
 }
